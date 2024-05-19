@@ -26,7 +26,7 @@ cpanm DateTime DateTime::Locale DateTime::TimeZone Data::Dumper \
     lib open
 
 cd /opt
-wget -O - https://www.webmin.com/download/webmin-current.tar.gz | tar -xzf - \
+wget -O - https://www.webmin.com/download/webmin-current.tar.gz | tar -xzf -
 mv webmin* webmin
 cd /opt/webmin
 ./setup.sh /usr/local/webmin
