@@ -1,22 +1,27 @@
-ARG MICRODIR=/microdir
-ARG PACKAGES_TO_INSTALL="webmin openssl "
+FROM alpine:edge
 
-FROM redhat/ubi9 AS BUILD
-ARG MICRODIR
-ARG PACKAGES_TO_INSTALL
-RUN curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh && \
-    sh ./setup-repos.sh -f && \
-    mkdir ${MICRODIR}
-RUN dnf install \
-    --installroot ${MICRODIR} \
-    # --setop install_weak_deps=false \
-    -y \
-    ${PACKAGES_TO_INSTALL} && \
-    dnf clean all \
-    --installroot ${MICRODIR}
+LABEL maintainer=Patrick<patrick@tinkerscave.com>
 
-FROM redhat/ubi9-minimal AS IMAGE
-ARG MICRODIR
-COPY --from=BUILD ${MICRODIR}/ . 
-EXPOSE 10000
-CMD ["webmin"]
+WORKDIR /opt
+
+# Add script to execute webmin and 'sleep infinity'
+COPY scripts/ .
+
+# ENV needed for webmin install.sh
+ENV APP_UID=10000 \
+    APP_USER=infra \
+    config_dir=/etc/webmin \
+    var_dir=/var/webmin \
+    perl=/usr/bin/perl \
+    login=admin \
+    password=admin \
+    port=10000 \
+    ssl=0 \
+    atboot=1
+
+RUN chmod +x /opt/*.sh \
+    && ./config.sh
+
+VOLUME ["/etc/webmin" , "/var/webmin" , "/etc/named"]
+
+ENTRYPOINT ["/etc/webmin/start", "--nofork"]

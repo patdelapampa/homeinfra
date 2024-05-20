@@ -17,7 +17,8 @@ apk add --no-cache \
     bind \
     dhcp-server \
     samba-dc \
-    krb5
+    krb5 \
+    chrony
 
 # Install Perl modules
 cpanm DateTime DateTime::Locale DateTime::TimeZone Data::Dumper \
@@ -31,7 +32,11 @@ mv webmin* webmin
 cd /opt/webmin
 ./setup.sh /usr/local/webmin
 cd /usr/local/webmin
+
+# Clean up
 rm -rf /opt/webmin
+rm -rf /var/cache/apk/*
+
 # chown -R tinker:tinker /usr/local/webmin
 
 
